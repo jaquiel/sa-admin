@@ -1,0 +1,135 @@
+// Estilos compartilhados por Carteiras Aplicadas / Carteiras Livres
+.wp {
+  flex: 1;
+  min-height: 100vh;
+  background: rgba(248, 250, 252, 0.5);
+  padding-bottom: 80px;
+
+  &__top { position: sticky; top: 0; z-index: 10; padding: 24px; }
+  &__container { max-width: 1280px; margin: 0 auto; }
+  &__content { padding: 32px 24px; }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+    h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.025em; color: var(--slate-900); }
+    p { margin: 0; font-size: 14px; color: var(--slate-500); }
+  }
+
+  &__back { margin-left: -8px; color: var(--slate-500); &:hover { color: var(--slate-900); } }
+
+  &__toolbar {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    @media (min-width: 640px) { flex-direction: row; }
+  }
+
+  &__search { width: 100%; @media (min-width: 640px) { width: 320px; } }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    @media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.15s;
+    &:hover { box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1); }
+  }
+
+  &__card-head {
+    padding: 24px 24px 12px;
+    border-bottom: 1px solid var(--slate-100);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__card-id {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--slate-900); }
+    span { font-size: 12px; color: var(--slate-500); }
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    &--indigo { background: var(--indigo-50); border-color: var(--indigo-100); color: var(--indigo-600); }
+    &--emerald { background: var(--emerald-50); border-color: var(--emerald-100); color: var(--emerald-600); }
+  }
+
+  &__card-body { flex: 1; padding: 24px; }
+
+  &__owner {
+    margin-bottom: 24px;
+    padding: 12px;
+    background: var(--slate-50);
+    border: 1px solid var(--slate-100);
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    svg { flex-shrink: 0; margin-top: 2px; }
+  }
+
+  &__owner-label { display: block; margin-bottom: 2px; font-size: 12px; font-weight: 600; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.05em; }
+  &__owner-name { font-size: 14px; font-weight: 500; color: var(--slate-900); }
+  &__owner-id { font-size: 12px; color: var(--slate-500); }
+
+  &__balance { margin-bottom: 24px; }
+  &__balance-label { display: block; margin-bottom: 4px; font-size: 14px; color: var(--slate-500); }
+  &__balance-row { display: flex; align-items: baseline; gap: 8px; }
+  &__balance-value { font-size: 24px; font-weight: 700; color: var(--slate-900); }
+  &__updated { display: block; margin-top: 4px; font-size: 12px; color: var(--slate-400); }
+
+  &__perf {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--emerald-600);
+    background: var(--emerald-50);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--emerald-100);
+    &--strong { font-weight: 700; padding: 4px 8px; }
+  }
+
+  &__card-foot { padding: 16px; background: rgba(248, 250, 252, 0.5); border-top: 1px solid var(--slate-100); }
+
+  &__more {
+    width: 100%;
+    &:hover { color: var(--indigo-600) !important; background: var(--indigo-50) !important; }
+    &--emerald:hover { color: var(--emerald-600) !important; background: var(--emerald-50) !important; }
+  }
+
+  &__table-wrap { overflow-x: auto; }
+  &__table thead tr { background: var(--slate-50); }
+  &__table th { text-transform: none; font-size: 14px; font-weight: 500; color: var(--slate-500); }
+  &__table td { padding: 12px 8px; }
+
+  &__row-name { font-weight: 700; color: var(--slate-900); }
+  &__row-id { font-size: 12px; color: var(--slate-500); }
+  &__row-owner { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 12px; color: var(--slate-600); }
+  &__muted { font-size: 14px; color: var(--slate-500) !important; }
+  &__strong { font-weight: 700; color: var(--slate-900) !important; }
+
+  &__details { color: var(--indigo-600); &:hover { background: var(--indigo-50); } &--emerald { color: var(--emerald-600); &:hover { background: var(--emerald-50); } } }
+}

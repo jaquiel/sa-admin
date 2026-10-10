@@ -277,6 +277,7 @@ export interface GroupedDocuments {
 export interface Wallet {
   id: string;
   type: string;
+  currencyId?: string;
   currencyIsoCode: string;
   balance: Num;
   reserved: Num;
@@ -322,6 +323,62 @@ export interface ContractListItem {
   currencyCode: string;
   startDate: string | null;
   endDate: string | null;
+  createdAtUtc?: string;
+  clients?: { clientId: string; displayName: string; personType: string }[];
+  clientCount?: number;
+  primaryEngine?: { engineId: string; name: string } | null;
+}
+
+/** GET /admin/contracts/:id. `currentBalance` ainda é sempre null no backend. */
+export interface ContractDetail {
+  id: string;
+  publicCode: string;
+  name: string | null;
+  registrationStatus: string;
+  term: { value: number; unit: string } | null;
+  startDate: string | null;
+  expectedEndDate: string | null;
+  currency: { id: string; isoCode: string; name: string } | null;
+  initialContractualCapital: Num | null;
+  initialConsolidatedCapital: Num | null;
+  currentBalance: Num | null;
+  initialCapitalOrigin: { id: string; code: string; name: string } | null;
+  financialNotes: string | null;
+  businessStatus: { id: string; code: string; name: string } | null;
+  primaryEngine: { engineId: string; code: string; name: string; connectionStatus: string } | null;
+  participants: {
+    participantId: string;
+    clientId: string;
+    displayName: string;
+    personType: string;
+    allocatedAmount: Num | null;
+    allocationPercentage: Num | null;
+    linkedAtUtc: string;
+  }[];
+  createdAtUtc: string;
+  updatedAtUtc: string | null;
+  finalizedAtUtc: string | null;
+  version: number;
+}
+
+export interface ContractCatalogItem {
+  id: string;
+  code: string;
+  name: string;
+  isActive?: boolean;
+  isSelectable?: boolean;
+  displayOrder?: number;
+}
+
+/** Kind: Wallet (walletType) | BankAccount (bankName, accountNumberMasked) | Contract (contractPublicCode, contractName). */
+export interface TransactionEndpoint {
+  kind: string;
+  id?: string;
+  walletType: string | null;
+  bankName?: string | null;
+  accountNumberMasked?: string | null;
+  contractPublicCode?: string | null;
+  contractName: string | null;
 }
 
 export interface TransactionSummary {
@@ -329,11 +386,14 @@ export interface TransactionSummary {
   requestNumber: string;
   type: string;
   status: string;
+  clientId?: string;
+  clientName?: string;
   currencyIsoCode: string;
   amount: Num;
-  source: { kind: string; walletType: string | null; contractName: string | null } | null;
-  destination: { kind: string; walletType: string | null; contractName: string | null } | null;
+  source: TransactionEndpoint | null;
+  destination: TransactionEndpoint | null;
   requestedAtUtc: string;
+  attentionRequired?: boolean;
 }
 
 // ---- patrimônio ----

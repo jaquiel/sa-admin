@@ -80,10 +80,41 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Lógicas', menu: 'logics', permission: 'logics:read' },
       },
       {
+        path: 'logicas/nova',
+        name: 'logic-create',
+        component: () => import('pages/logics/CreateLogicPage.vue'),
+        meta: { title: 'Nova Lógica', menu: 'logics', permission: 'logics:write' },
+      },
+      {
+        path: 'logicas/:id',
+        name: 'logic-detail',
+        component: () => import('pages/logics/LogicDetailPage.vue'),
+        props: true,
+        meta: { title: 'Lógica', menu: 'logics', permission: 'logics:read' },
+      },
+      {
         path: 'transacoes',
         name: 'transactions',
         component: () => import('pages/transactions/TransactionsPage.vue'),
         meta: { title: 'Transações', menu: 'transactions', permission: 'transactions:read' },
+      },
+      {
+        path: 'transacoes/carteira-contratos',
+        name: 'transactions-contracts-wallet',
+        component: () => import('pages/transactions/ContractsWalletPage.vue'),
+        meta: { title: 'Carteira de Contratos', menu: 'transactions', permission: 'transactions:read' },
+      },
+      {
+        path: 'transacoes/carteiras-aplicadas',
+        name: 'transactions-applied-wallets',
+        component: () => import('pages/transactions/AppliedWalletsPage.vue'),
+        meta: { title: 'Carteiras Aplicadas', menu: 'transactions', permission: 'transactions:read' },
+      },
+      {
+        path: 'transacoes/carteiras-livres',
+        name: 'transactions-free-wallets',
+        component: () => import('pages/transactions/FreeWalletsPage.vue'),
+        meta: { title: 'Carteiras Livres', menu: 'transactions', permission: 'transactions:read' },
       },
       {
         path: 'credito',

@@ -13,7 +13,9 @@
     dropdown-icon="expand_more"
     popup-content-class="sa-select-menu"
     hide-bottom-space
-  />
+  >
+    <template v-if="$slots.prepend" #prepend><slot name="prepend" /></template>
+  </q-select>
 </template>
 
 <script setup lang="ts">

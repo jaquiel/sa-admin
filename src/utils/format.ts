@@ -26,6 +26,20 @@ export function formatMoney(value: number | string | null | undefined, currency 
   }
 }
 
+const CURRENCY_LOCALE: Record<string, string> = { BRL: 'pt-BR', EUR: 'de-DE', JPY: 'ja-JP' };
+
+/** Valor na moeda informada, com a localidade nativa da moeda (US$ em en-US, R$ em pt-BR…). */
+export function formatCurrencyIn(value: number, currency: string): string {
+  return new Intl.NumberFormat(CURRENCY_LOCALE[currency] ?? 'en-US', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: currency === 'JPY' ? 0 : 2,
+  }).format(value);
+}
+
+/** Percentual com sinal: +1.25% / -0.40%. */
+export const signedPct = (v: number, digits = 2) => `${v > 0 ? '+' : ''}${v.toFixed(digits)}%`;
+
 const pad = (n: number) => String(n).padStart(2, '0');
 
 /** Data ISO (yyyy-mm-dd ou UTC) → dd/MM/yyyy. Datas puras não sofrem ajuste de fuso. */

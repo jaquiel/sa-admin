@@ -21,7 +21,7 @@ export async function login(email: string, password: string): Promise<LoginRespo
       user: { id: '1', name: 'Admin User', email: email || 'admin@sa.com', avatar: null },
       permissions: [
         'customers:read', 'customers:write', 'contracts:read', 'contracts:write',
-        'logics:read', 'transactions:read', 'credit:read', 'communication:read', 'settings:read',
+        'logics:read', 'logics:write', 'transactions:read', 'credit:read', 'communication:read', 'settings:read',
         'landing:edit',
       ],
     };
@@ -59,7 +59,7 @@ interface CurrentUserResponse {
 /** Permissões usadas em meta.permission das rotas. */
 const APP_PERMISSIONS = [
   'customers:read', 'customers:write', 'contracts:read', 'contracts:write',
-  'logics:read', 'transactions:read', 'credit:read', 'communication:read', 'settings:read',
+  'logics:read', 'logics:write', 'transactions:read', 'credit:read', 'communication:read', 'settings:read',
   'landing:edit',
 ];
 
