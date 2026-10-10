@@ -1,0 +1,37 @@
+{
+  "name": "sa-admin",
+  "version": "0.1.0",
+  "description": "Strategy Analytics — Inserção de Dados (Admin)",
+  "productName": "Strategy Analytics",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "quasar dev",
+    "build": "quasar build",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "postinstall": "quasar prepare"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.17.0",
+    "apexcharts": "^5.10.0",
+    "axios": "^1.12.2",
+    "lucide-vue-next": "^0.544.0",
+    "pinia": "^3.0.3",
+    "quasar": "2.18.5",
+    "vue": "3.5.22",
+    "vue-router": "^4.5.1",
+    "vue3-apexcharts": "^1.11.2"
+  },
+  "devDependencies": {
+    "@quasar/app-vite": "^2.4.0",
+    "@types/node": "^22.10.0",
+    "autoprefixer": "^10.4.21",
+    "sass-embedded": "^1.93.2",
+    "typescript": "~5.9.2",
+    "vue-tsc": "^3.3.12"
+  },
+  "engines": {
+    "node": "^20 || ^22 || ^24",
+    "npm": ">= 6.13.4"
+  }
+}

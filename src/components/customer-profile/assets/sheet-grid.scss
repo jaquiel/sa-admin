@@ -1,0 +1,104 @@
+// Grids compartilhados pelos formulários dos drawers de patrimônio (equivalentes ao grid do Tailwind)
+
+.g12,
+.g2,
+.g3,
+.g4 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.g4 {
+  gap: 16px;
+}
+
+.g--end {
+  align-items: end;
+}
+
+.g--tight {
+  gap: 16px;
+  grid-template-columns: 1fr 1fr !important;
+}
+
+@media (min-width: 768px) {
+  .g12 {
+    grid-template-columns: repeat(12, 1fr);
+  }
+  .g3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .g4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .c3 { grid-column: span 3; }
+  .c4 { grid-column: span 4; }
+  .c6 { grid-column: span 6; }
+  .c8 { grid-column: span 8; }
+  .c12 { grid-column: span 12; }
+  .c-span3 { grid-column: span 3; }
+}
+
+@media (min-width: 1024px) {
+  .g2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.paid-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: var(--slate-50);
+  border-radius: 8px;
+  border: 1px solid var(--slate-100);
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    label {
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+  }
+
+  p {
+    font-size: 10px;
+    color: var(--slate-500);
+    margin: 0;
+  }
+}
+
+.photos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  &--5 {
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+}

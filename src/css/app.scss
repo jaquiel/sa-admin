@@ -1,0 +1,348 @@
+// Estilos globais — tokens e utilitários do design (equivalentes às classes Tailwind do Figma Make)
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-300: #93c5fd;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --blue-800: #1e40af;
+
+  --cyan-400: #22d3ee;
+  --cyan-500: #06b6d4;
+  --cyan-600: #0891b2;
+
+  --green-50: #f0fdf4;
+  --green-100: #dcfce7;
+  --green-200: #bbf7d0;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+
+  --emerald-50: #ecfdf5;
+  --emerald-200: #a7f3d0;
+  --emerald-700: #047857;
+
+  --amber-50: #fffbeb;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+
+  --orange-50: #fff7ed;
+  --orange-100: #ffedd5;
+  --orange-200: #fed7aa;
+  --orange-700: #c2410c;
+
+  --red-50: #fef2f2;
+  --red-200: #fecaca;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+
+  --purple-50: #faf5ff;
+  --purple-100: #f3e8ff;
+  --purple-200: #e9d5ff;
+  --purple-400: #c084fc;
+  --purple-500: #a855f7;
+  --purple-700: #7e22ce;
+
+  --radius: 10px;
+}
+
+html,
+body {
+  font-family: 'Inter', 'Roboto', -apple-system, 'Segoe UI', sans-serif;
+  color: var(--slate-900);
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+// ---------- Cards ----------
+.sa-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+
+  &__header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--slate-100);
+    background: rgba(248, 250, 252, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--slate-700);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  &__body {
+    padding: 24px;
+  }
+}
+
+// ---------- Badges ----------
+.sa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  width: fit-content;
+
+  &--xs { font-size: 10px; }
+  &--upper { text-transform: uppercase; font-weight: 700; letter-spacing: 0.03em; }
+  &--outline { background: #fff; border-color: var(--slate-300); color: var(--slate-600); }
+  &--slate { background: var(--slate-100); border-color: var(--slate-200); color: var(--slate-500); }
+  &--green { background: var(--green-50); border-color: var(--green-200); color: var(--green-700); }
+  &--green-strong { background: var(--green-600); color: #fff; }
+  &--emerald { background: var(--emerald-50); border-color: var(--emerald-200); color: var(--emerald-700); }
+  &--blue { background: var(--blue-50); border-color: var(--blue-200); color: var(--blue-700); }
+  &--amber { background: var(--amber-50); border-color: var(--amber-200); color: var(--amber-700); }
+  &--orange { background: var(--orange-50); border-color: var(--orange-200); color: var(--orange-700); }
+  &--red { background: var(--red-50); border-color: var(--red-200); color: var(--red-700); }
+  &--purple { background: var(--purple-50); border-color: var(--purple-200); color: var(--purple-700); }
+}
+
+// ---------- Data field ----------
+.sa-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--slate-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--slate-900);
+  }
+}
+
+.sa-separator {
+  height: 1px;
+  background: var(--slate-200);
+  border: 0;
+  margin: 0;
+}
+
+// ---------- Tabelas (equivalente ao Table do shadcn) ----------
+.sa-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th {
+    text-align: left;
+    height: 40px;
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--slate-500);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 8px;
+    vertical-align: middle;
+    color: var(--slate-700);
+  }
+
+  tr {
+    border-bottom: 1px solid var(--slate-200);
+    transition: background 0.15s;
+  }
+
+  tbody tr:last-child { border-bottom: 0; }
+  tbody tr:hover { background: rgba(248, 250, 252, 0.6); }
+}
+
+// ---------- Inputs Quasar com aparência do design ----------
+.sa-input.q-field--outlined .q-field__control {
+  border-radius: 8px;
+  background: var(--slate-50);
+  &:before { border-color: var(--slate-200); }
+}
+.sa-input.q-field--outlined.q-field--focused .q-field__control {
+  background: #fff;
+}
+.sa-input .q-field__native,
+.sa-input .q-field__input {
+  font-size: 14px;
+}
+
+.sa-select.q-field--outlined .q-field__control {
+  border-radius: 8px;
+  min-height: 36px;
+  height: 36px;
+  &:before { border-color: var(--slate-200); }
+}
+.sa-select .q-field__native { font-size: 12px; min-height: 36px; padding: 0; }
+.sa-select .q-field__marginal { height: 36px; }
+
+// ---------- Controles de formulário (Input/Select/Textarea do shadcn) ----------
+.sa-control {
+  min-width: 0;
+}
+
+.sa-control.q-field--outlined {
+  .q-field__control {
+    min-height: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #f3f3f5;
+    padding: 0 12px;
+    &:before {
+      border: 1px solid transparent;
+    }
+    &:hover:before {
+      border-color: var(--slate-300);
+    }
+  }
+  &.q-field--focused .q-field__control:after {
+    border-width: 1px;
+    border-color: var(--slate-400);
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.3);
+  }
+  .q-field__marginal {
+    height: 36px;
+    color: var(--slate-400);
+  }
+  .q-field__native,
+  .q-field__input {
+    min-height: 36px;
+    font-size: 14px;
+    color: var(--slate-900);
+    padding: 0;
+    &::placeholder {
+      color: #717182;
+      opacity: 1;
+    }
+  }
+  &.q-select .q-field__native > span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &.sa-control--empty .q-field__native > span {
+    color: #717182;
+  }
+  &.sa-control--sm .q-field__control {
+    background: #fff;
+    border-radius: 8px;
+    &:before {
+      border-color: var(--slate-200);
+    }
+  }
+  &.sa-control--sm .q-field__native {
+    font-size: 12px;
+  }
+  &.sa-control--textarea .q-field__control {
+    height: auto;
+    padding: 8px 12px;
+  }
+  &.sa-control--textarea .q-field__native {
+    padding: 0;
+    resize: vertical;
+  }
+}
+
+.sa-select-menu .q-item {
+  font-size: 14px;
+  min-height: 34px;
+}
+
+// Drawer lateral (Sheet do shadcn) sobre q-dialog: sem o padding padrão do Quasar
+.sa-sheet-dialog .q-dialog__inner {
+  padding: 0 !important;
+}
+
+// ---------- Botões ----------
+.sa-btn {
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: 0;
+  border-radius: 8px;
+}
+
+.sa-btn--outline {
+  background: #fff !important;
+  color: var(--slate-600) !important;
+  &:before { border: 1px solid var(--slate-300) !important; }
+}
+
+// ---------- Utilidades ----------
+.text-slate-400 { color: var(--slate-400); }
+.text-slate-500 { color: var(--slate-500); }
+.text-slate-600 { color: var(--slate-600); }
+.text-slate-700 { color: var(--slate-700); }
+.text-slate-900 { color: var(--slate-900); }
+.text-green-600 { color: var(--green-600); }
+.text-red-600 { color: var(--red-600); }
+.text-blue-600 { color: var(--blue-600); }
+.text-amber-600 { color: var(--amber-600); }
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.3s ease;
+}
+.fade-slide-enter-from,
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+
+@keyframes sa-spin { to { transform: rotate(360deg); } }
+.sa-spin { animation: sa-spin 1s linear infinite; }
