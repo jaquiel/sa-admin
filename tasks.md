@@ -9,7 +9,7 @@
 | ✔️ **Painel, seleção de cliente e banco** (`opClientsDb`) | ✅ Sim | `GET /admin/customers/quick-search` (ou `/lookup`) e `GET /admin/customers/{id}/bank-accounts`. |
 | **Painel, contratos para liquidar** (`contractsForLiquidation`) | 🟡 Parcial | `GET /admin/contracts` traz a lista com o capital atual, mas não existe uma operação de "liquidação". |
 | **Painel, moedas para Mint** (`mintCurrencies`) | ❌ Não | A tabela `core.currencies` existe, mas não há endpoint admin para listar moedas. |
-| **Cards do topo** (`financialSummary`: Total, Livre, Aplicada, Contratos) | ❌ Não | Não há endpoint com os saldos somados de todos os clientes nem com a cotação USD→BRL. Só existe o portfólio de um cliente por vez (`/admin/customers/{id}/portfolio`). |
+| ✔️ **Cards do topo** (`financialSummary`: Total, Livre, Aplicada, Contratos) | 🟡 Parcial | Usam `GET /admin/transactions/summary`, que traz os saldos somados por moeda. Cada card mostra uma linha por moeda. Falta a cotação USD→BRL para consolidar numa moeda só, e a tendência (%) da Carteira Aplicada. |
 | **Carteiras Livres / Aplicadas** (`freeWalletsMock`, `appliedWalletsMock`) | ❌ Não, para a lista geral | Só existe `GET /admin/customers/{id}/wallets`, de um cliente por vez. Daria para montar com `/admin/customers/cards` e uma chamada por cliente, mas fica lento com muitos clientes. |
 | ✔️ **Carteira de Contratos** (`contractWalletsMock`) | 🟡 Parcial | Lista, busca e cards usam `GET /admin/contracts`. O que ficou faltando está no tópico Contratos. |
 

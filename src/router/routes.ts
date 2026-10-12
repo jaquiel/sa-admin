@@ -73,23 +73,24 @@ const routes: RouteRecordRaw[] = [
         props: true,
         meta: { title: 'Lógica do Contrato', menu: 'contracts', permission: 'contracts:read' },
       },
+      // Lógicas ainda não têm backend (só mocks/logics.ts): as rotas mostram 404.
+      // Para reativar, volte a usar LogicsPage, CreateLogicPage e LogicDetailPage (com props: true) em pages/logics.
       {
         path: 'logicas',
         name: 'logics',
-        component: () => import('pages/logics/LogicsPage.vue'),
+        component: () => import('pages/NotFoundPage.vue'),
         meta: { title: 'Lógicas', menu: 'logics', permission: 'logics:read' },
       },
       {
         path: 'logicas/nova',
         name: 'logic-create',
-        component: () => import('pages/logics/CreateLogicPage.vue'),
+        component: () => import('pages/NotFoundPage.vue'),
         meta: { title: 'Nova Lógica', menu: 'logics', permission: 'logics:write' },
       },
       {
         path: 'logicas/:id',
         name: 'logic-detail',
-        component: () => import('pages/logics/LogicDetailPage.vue'),
-        props: true,
+        component: () => import('pages/NotFoundPage.vue'),
         meta: { title: 'Lógica', menu: 'logics', permission: 'logics:read' },
       },
       {
@@ -119,13 +120,13 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'credito',
         name: 'credit',
-        component: () => import('pages/credit/CreditPage.vue'),
+        component: () => import('pages/NotFoundPage.vue'),
         meta: { title: 'Crédito', menu: 'credit', permission: 'credit:read' },
       },
       {
         path: 'comunicados',
         name: 'communication',
-        component: () => import('pages/communication/CommunicationPage.vue'),
+        component: () => import('pages/NotFoundPage.vue'),
         meta: { title: 'Comunicados', menu: 'communication', permission: 'communication:read' },
       },
       {

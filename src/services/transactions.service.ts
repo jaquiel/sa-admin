@@ -1,5 +1,5 @@
 import { api } from 'boot/axios';
-import type { TransactionSummary, Wallet } from 'src/types/api';
+import type { TransactionSummary, TransactionsSummary, Wallet } from 'src/types/api';
 import { transactions as transactionsMock } from 'src/mocks/customer-profile';
 import { unwrap, type ApiResponse, type PagedResponse } from './api-envelope';
 
@@ -39,6 +39,39 @@ export async function listAllTransactions(params: TransactionListParams): Promis
     totalItems: data.pagination?.totalItems ?? 0,
     hasNextPage: data.pagination?.hasNextPage ?? false,
   };
+}
+
+/** GET /admin/transactions/summary (saldos consolidados de todas as carteiras, por moeda) */
+export async function getTransactionsSummary(): Promise<TransactionsSummary> {
+  if (useMocks) {
+    await delay();
+    const zero = { balance: 0, reserved: 0, available: 0 };
+    const free = { balance: 7830000, reserved: 0, available: 7830000 };
+    const applied = { balance: 42860000, reserved: 0, available: 42860000 };
+    return {
+      calculatedAtUtc: new Date().toISOString(),
+      currencies: [
+        {
+          currencyId: 'brl',
+          currencyIsoCode: 'BRL',
+          free,
+          applied,
+          total: { balance: 50690000, reserved: 0, available: 50690000 },
+          contracts: { contractCount: 4, contractAllocation: 65250000, contractContributions: 0, total: 65250000 },
+        },
+        {
+          currencyId: 'usd',
+          currencyIsoCode: 'USD',
+          free: zero,
+          applied: zero,
+          total: zero,
+          contracts: { contractCount: 0, contractAllocation: 0, contractContributions: 0, total: 0 },
+        },
+      ],
+    };
+  }
+  const { data } = await api.get<ApiResponse<TransactionsSummary>>('/admin/transactions/summary');
+  return unwrap(data);
 }
 
 /** GET /admin/customers/:id/wallets */

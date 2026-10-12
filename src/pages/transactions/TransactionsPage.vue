@@ -16,18 +16,17 @@
         <div class="tp__kpis">
           <div class="tp__kpi tp__kpi--total">
             <span class="tp__kpi-title"><Landmark :size="16" /> Carteira Total</span>
-            <KpiValues :data="financialSummary.total" />
+            <KpiValues :values="kpis.total" :loading="summaryLoading" :error="summaryError" />
           </div>
           <button type="button" class="tp__kpi tp__kpi--free" @click="router.push({ name: 'transactions-free-wallets' })">
             <span class="tp__kpi-title"><Wallet :size="16" class="tp__ico-emerald" /> Carteira Livre</span>
-            <KpiValues :data="financialSummary.free" />
+            <KpiValues :values="kpis.free" :loading="summaryLoading" :error="summaryError" />
           </button>
           <button type="button" class="tp__kpi tp__kpi--applied" @click="router.push({ name: 'transactions-applied-wallets' })">
             <span class="tp__kpi-title">
               <span class="tp__kpi-title-main"><PieChartIcon :size="16" class="tp__ico-indigo" /> Carteira Aplicada</span>
-              <span class="tp__trend">{{ financialSummary.invested.trend }}</span>
             </span>
-            <KpiValues :data="financialSummary.invested" />
+            <KpiValues :values="kpis.applied" :loading="summaryLoading" :error="summaryError" />
           </button>
           <button type="button" class="tp__kpi tp__kpi--contracts" @click="router.push({ name: 'transactions-contracts-wallet' })">
             <Briefcase :size="64" class="tp__kpi-bg" />
@@ -35,7 +34,7 @@
               <span class="tp__kpi-title-main"><Briefcase :size="16" /> Carteira de Contratos</span>
               <ArrowUpRight :size="16" class="tp__kpi-arrow" />
             </span>
-            <KpiValues :data="financialSummary.contracts" />
+            <KpiValues :values="kpis.contracts" :loading="summaryLoading" :error="summaryError" />
             <span class="tp__kpi-link">Ver visão analítica</span>
           </button>
         </div>
@@ -136,7 +135,7 @@
         </div>
       </transition>
 
-      <TransactionQueue ref="queue" @changed="load" />
+      <TransactionQueue ref="queue" @changed="load(); loadSummary()" />
 
       <OperationalPanel />
     </div>
@@ -169,11 +168,9 @@ import SaSelect from 'components/ui/SaSelect.vue';
 import OperationalPanel from 'components/transactions/OperationalPanel.vue';
 import ExecuteTransactionDialog from 'components/transactions/ExecuteTransactionDialog.vue';
 import TransactionQueue from 'components/transactions/TransactionQueue.vue';
-// KPIs ainda vêm do mock: o backend não tem um endpoint de saldos consolidados de todas as carteiras.
-import { financialSummary } from 'src/mocks/transactions';
-import { listAllTransactions } from 'src/services/transactions.service';
+import { getTransactionsSummary, listAllTransactions } from 'src/services/transactions.service';
 import { apiErrorMessage } from 'src/services/api-envelope';
-import type { TransactionSummary } from 'src/types/api';
+import type { TransactionSummary, TransactionsSummary } from 'src/types/api';
 import { formatCurrencyIn, formatDate } from 'src/utils/format';
 import {
   TRANSACTION_STATUS,
@@ -276,24 +273,73 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
 
 void load();
 
+// ---- KPIs: saldos consolidados por moeda (GET /admin/transactions/summary) ----
+
+interface KpiValue {
+  currency: string;
+  amount: number;
+}
+
+const summary = ref<TransactionsSummary | null>(null);
+const summaryLoading = ref(false);
+const summaryError = ref<string | null>(null);
+
+async function loadSummary() {
+  summaryLoading.value = true;
+  summaryError.value = null;
+  try {
+    summary.value = await getTransactionsSummary();
+  } catch (e) {
+    summaryError.value = apiErrorMessage(e, 'Não foi possível carregar os saldos.');
+  } finally {
+    summaryLoading.value = false;
+  }
+}
+
+void loadSummary();
+
+/** Valor de cada moeda por card (sem cotação na API, as moedas não são somadas entre si). */
+const kpis = computed(() => {
+  const currencies = summary.value?.currencies ?? [];
+  const pick = (fn: (c: (typeof currencies)[number]) => number | string): KpiValue[] =>
+    currencies.map((c) => ({ currency: c.currencyIsoCode, amount: Number(fn(c)) }));
+  return {
+    total: pick((c) => c.total.balance),
+    free: pick((c) => c.free.balance),
+    applied: pick((c) => c.applied.balance),
+    contracts: pick((c) => c.contracts.total),
+  };
+});
+
 const queue = ref<InstanceType<typeof TransactionQueue> | null>(null);
 function onCreated() {
   if (page.value === 1) void load();
   else page.value = 1;
   void queue.value?.load();
+  void loadSummary();
 }
 
 const timeOf = (iso: string) => new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-/** Valores USD + BRL + cotação de um card de KPI. */
+/** Valores por moeda de um card de KPI. */
 const KpiValues = defineComponent({
-  props: { data: { type: Object as PropType<{ usd: number; brl: number; rate: number }>, required: true } },
+  props: {
+    values: { type: Array as PropType<KpiValue[]>, required: true },
+    loading: Boolean,
+    error: { type: String as PropType<string | null>, default: null },
+  },
   setup(p) {
-    return () => [
-      h('div', { class: 'tp-kpi__usd' }, formatCurrencyIn(p.data.usd, 'USD')),
-      h('div', { class: 'tp-kpi__brl' }, formatCurrencyIn(p.data.brl, 'BRL')),
-      h('div', { class: 'tp-kpi__rate font-mono' }, `(Cotação USD → BRL = ${p.data.rate.toFixed(2)})`),
-    ];
+    return () => {
+      if (p.loading && !p.values.length) return h('div', { class: 'tp-kpi__state' }, 'Carregando...');
+      if (p.error) return h('div', { class: 'tp-kpi__state tp-kpi__state--error' }, p.error);
+      if (!p.values.length) return h('div', { class: 'tp-kpi__state' }, '—');
+      return p.values.map((v) =>
+        h('div', { class: 'tp-kpi__row' }, [
+          h('span', { class: 'tp-kpi__cur font-mono' }, v.currency),
+          h('span', { class: 'tp-kpi__amount' }, formatCurrencyIn(v.amount, v.currency)),
+        ]),
+      );
+    };
   },
 });
 </script>
@@ -372,15 +418,16 @@ const KpiValues = defineComponent({
   &__ico-emerald { color: var(--emerald-500); }
   &__ico-indigo { color: var(--indigo-500); }
 
-  &__trend { font-size: 10px; font-weight: 700; color: var(--emerald-600); background: var(--emerald-50); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--emerald-100); }
-
   &__kpi-bg { position: absolute; top: -4px; right: -4px; color: var(--indigo-600); opacity: 0.1; transition: opacity 0.15s; }
   &__kpi-arrow { color: var(--indigo-400); transition: color 0.15s; }
   &__kpi-link { position: relative; margin-top: 8px; font-size: 10px; font-weight: 500; color: var(--indigo-500); }
 
-  :deep(.tp-kpi__usd) { position: relative; font-size: 20px; font-weight: 700; color: var(--slate-900); }
-  :deep(.tp-kpi__brl) { position: relative; margin-top: 4px; font-size: 14px; font-weight: 600; color: var(--slate-600); }
-  :deep(.tp-kpi__rate) { position: relative; margin-top: 2px; font-size: 10px; color: var(--slate-400); }
+  :deep(.tp-kpi__row) { position: relative; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  :deep(.tp-kpi__row + .tp-kpi__row) { margin-top: 4px; }
+  :deep(.tp-kpi__cur) { font-size: 10px; font-weight: 700; color: var(--slate-400); }
+  :deep(.tp-kpi__amount) { font-size: 16px; font-weight: 700; color: var(--slate-900); white-space: nowrap; }
+  :deep(.tp-kpi__state) { position: relative; font-size: 13px; color: var(--slate-400); }
+  :deep(.tp-kpi__state--error) { color: var(--rose-600); }
 
   &__body {
     max-width: 1600px;

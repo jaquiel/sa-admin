@@ -284,6 +284,27 @@ export interface Wallet {
   available: Num;
 }
 
+export interface WalletBalances {
+  balance: Num;
+  reserved: Num;
+  available: Num;
+}
+
+/** Item de GET /admin/transactions/summary: saldos somados de todos os clientes, por moeda. */
+export interface TransactionsSummaryCurrency {
+  currencyId: string;
+  currencyIsoCode: string;
+  free: WalletBalances;
+  applied: WalletBalances;
+  total: WalletBalances;
+  contracts: { contractCount: number; contractAllocation: Num; contractContributions: Num; total: Num };
+}
+
+export interface TransactionsSummary {
+  calculatedAtUtc: string;
+  currencies: TransactionsSummaryCurrency[];
+}
+
 export interface PortfolioCurrency {
   currencyId: string;
   currencyIsoCode: string;
