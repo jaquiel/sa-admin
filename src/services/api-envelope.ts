@@ -36,6 +36,17 @@ export function apiErrorMessage(e: unknown, fallback: string): string {
   return msgs.length ? `${fallback} ${msgs.slice(0, 3).join(' · ')}` : fallback;
 }
 
+/** `errors[0].code` de um erro da API (envelope do axios ou ApiError); 401/403 podem vir sem corpo. */
+export function apiErrorCode(e: unknown): string | undefined {
+  if (e instanceof ApiError) return e.errors[0]?.code;
+  return (e as { response?: { data?: Partial<ApiResponse<unknown>> } })?.response?.data?.errors?.[0]?.code;
+}
+
+/** Status HTTP de um erro do axios (undefined se não houve resposta). */
+export function apiErrorStatus(e: unknown): number | undefined {
+  return (e as { response?: { status?: number } })?.response?.status;
+}
+
 export function unwrap<T>(res: ApiResponse<T>): T {
   if (!res.success || res.data == null) throw new ApiError(res.errors ?? []);
   return res.data;

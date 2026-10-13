@@ -529,6 +529,8 @@ body {
   overflow: hidden;
 
   &--lg { width: 896px; max-height: 80vh; }
+  // O q-dialog limita o conteúdo a 560px (.q-dialog__inner--minimized > div); o --lg precisa passar disso.
+  .q-dialog__inner > &--lg { max-width: 94vw; }
   &--xl { width: 95vw; height: 90vh; max-width: 95vw; }
 }
 
