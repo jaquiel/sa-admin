@@ -2,29 +2,29 @@
   <div>
     <h4 class="rt__title">Últimas Movimentações</h4>
     <div class="rt__list">
-      <div v-for="t in transactions.slice(0, 3)" :key="t.id" class="rt__item">
+      <div v-for="m in movements" :key="m.transactionId" class="rt__item">
         <div class="rt__row">
-          <span class="rt__date"><WalletTxIcon :type="t.type" /> {{ formatDate(t.date) }}</span>
-          <span class="rt__value" :class="t.type === 'Withdraw' ? 'text-rose-600' : 'text-emerald-600'">
-            {{ t.type === 'Withdraw' ? '-' : '+' }}{{ formatCurrencyIn(t.value, t.currency) }}
+          <span class="rt__date" :title="`${movementMeta(m, currency).label} · ${m.requestNumber}`">
+            <component :is="movementMeta(m, currency).icon" :size="16" :class="movementMeta(m, currency).cls" /> {{ formatDate(m.occurredAtUtc) }}
           </span>
+          <span class="rt__value" :class="movementMeta(m, currency).cls">{{ movementMeta(m, currency).signed }}</span>
         </div>
         <div class="rt__daily">
           <span>Saldo do Dia:</span>
-          <span class="font-mono">{{ formatCurrencyIn(t.dailyBalance, t.currency) }}</span>
+          <span class="font-mono">{{ formatCurrencyIn(Number(m.balanceAfter), currency) }}</span>
         </div>
       </div>
-      <p v-if="!transactions.length" class="rt__none">Nenhuma movimentação recente.</p>
+      <p v-if="!movements.length" class="rt__none">Sem movimentações.</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import WalletTxIcon from './WalletTxIcon.vue';
-import type { WalletTransaction } from 'src/mocks/transactions';
+import type { AdminWalletMovement } from 'src/types/api';
 import { formatCurrencyIn, formatDate } from 'src/utils/format';
+import { movementMeta } from 'src/utils/wallet-labels';
 
-defineProps<{ transactions: WalletTransaction[] }>();
+defineProps<{ movements: AdminWalletMovement[]; currency: string }>();
 </script>
 
 <style scoped lang="scss">

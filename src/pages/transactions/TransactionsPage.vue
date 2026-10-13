@@ -135,9 +135,9 @@
         </div>
       </transition>
 
-      <TransactionQueue ref="queue" @changed="load(); loadSummary()" />
+      <TransactionQueue ref="queue" @changed="refreshAll" />
 
-      <OperationalPanel />
+      <OperationalPanel ref="panel" />
     </div>
 
     <ExecuteTransactionDialog v-model="modalOpen" @created="onCreated" />
@@ -312,11 +312,21 @@ const kpis = computed(() => {
 });
 
 const queue = ref<InstanceType<typeof TransactionQueue> | null>(null);
+const panel = ref<InstanceType<typeof OperationalPanel> | null>(null);
+
+/** Uma ação na fila muda status e saldos: recarrega a tabela, os KPIs e o histórico do painel. */
+function refreshAll() {
+  void load();
+  void loadSummary();
+  void panel.value?.loadInternalHistory();
+}
+
 function onCreated() {
   if (page.value === 1) void load();
   else page.value = 1;
   void queue.value?.load();
   void loadSummary();
+  void panel.value?.loadInternalHistory();
 }
 
 const timeOf = (iso: string) => new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });

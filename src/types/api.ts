@@ -284,6 +284,39 @@ export interface Wallet {
   available: Num;
 }
 
+// ---- carteiras (GET /admin/wallets e /admin/wallets/{id}/statement) ----
+
+export type WalletType = 'Free' | 'Applied';
+export type MovementDirection = 'Credit' | 'Debit';
+export type WalletListSort = 'ClientName' | 'HighestBalance' | 'LowestBalance' | 'RecentlyMoved';
+
+/** Movimentação executada numa carteira (item de `recentMovements` e do extrato). */
+export interface AdminWalletMovement {
+  transactionId: string;
+  requestNumber: string;
+  /** Deposit | Withdrawal | WalletTransfer | ContractOperation */
+  type: string;
+  direction: MovementDirection;
+  amount: Num;
+  /** Saldo da carteira logo depois desta movimentação. */
+  balanceAfter: Num;
+  occurredAtUtc: string;
+}
+
+export interface AdminWalletListItem {
+  id: string;
+  type: WalletType;
+  currencyId: string;
+  currencyIsoCode: string;
+  client: { id: string; name: string };
+  balance: Num;
+  reserved: Num;
+  available: Num;
+  lastMovementAtUtc: string | null;
+  /** Até 3, da mais recente para a mais antiga. */
+  recentMovements: AdminWalletMovement[];
+}
+
 export interface WalletBalances {
   balance: Num;
   reserved: Num;

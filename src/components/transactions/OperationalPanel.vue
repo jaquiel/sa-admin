@@ -378,7 +378,46 @@
                 <th class="text-center" style="width: 120px">Ações</th>
               </tr>
             </thead>
-            <tbody>
+            <!-- Movimentações internas: transferências entre carteiras e operações de contrato da API -->
+            <tbody v-if="tab === 'internal'">
+              <tr v-if="internalLoading && !internalRows.length">
+                <td colspan="6" class="op__empty-row"><q-spinner size="20px" /> Carregando movimentações...</td>
+              </tr>
+              <tr v-else-if="!internalRows.length">
+                <td colspan="6" class="op__empty-row">{{ internalError ?? 'Nenhuma movimentação registrada para esta seção.' }}</td>
+              </tr>
+              <tr v-for="t in internalRows" :key="t.id" :class="{ op__pending: t.status === 'PendingValidation' }">
+                <td>
+                  <span class="op__log-date">{{ new Date(t.requestedAtUtc).toLocaleDateString('pt-BR') }}</span>
+                  <span class="op__log-time">{{ new Date(t.requestedAtUtc).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) }}</span>
+                </td>
+                <td>
+                  <span class="op__op-type">
+                    <component :is="transactionTypeMeta(t.type).icon" :size="12" :class="t.type === 'ContractOperation' ? 'op__ico-amber' : 'op__ico-blue'" />
+                    {{ transactionTypeMeta(t.type).label }}
+                  </span>
+                  <span class="op__op-hash font-mono"><Hash :size="10" /> {{ t.requestNumber }}</span>
+                  <span class="op__op-line" :title="t.clientName">{{ t.clientName ?? '—' }}</span>
+                </td>
+                <td>
+                  <span class="op__op-value">{{ formatCurrencyIn(Number(t.amount), t.currencyIsoCode) }}</span>
+                  <span class="op__op-line" :title="endpointLabel(t.source)">De: {{ endpointLabel(t.source) }}</span>
+                  <span class="op__op-line" :title="endpointLabel(t.destination)">Para: {{ endpointLabel(t.destination) }}</span>
+                </td>
+                <!-- Solicitante e ações só vêm no detalhe (GET /admin/transactions/{id}); ficam em branco por enquanto. -->
+                <td></td>
+                <td class="text-center">
+                  <span class="sa-badge sa-badge--xs" :class="transactionStatusMeta(t.status).cls">{{ transactionStatusMeta(t.status).label }}</span>
+                </td>
+                <td></td>
+              </tr>
+              <tr v-if="internalHasMore">
+                <td colspan="6" class="text-center">
+                  <q-btn flat no-caps dense class="sa-btn sa-btn--sm" :loading="internalLoading" label="Carregar mais" @click="loadInternalHistory(true)" />
+                </td>
+              </tr>
+            </tbody>
+            <tbody v-else>
               <tr v-if="!filteredHistory.length"><td colspan="6" class="op__empty-row">Nenhuma movimentação registrada para esta seção.</td></tr>
               <tr v-for="item in filteredHistory" :key="item.id" :class="{ 'op__pending': item.status === 'Pending' }">
                 <td>
@@ -454,7 +493,10 @@ import {
 } from 'src/mocks/transactions';
 import { useCustomerAccounts } from 'src/composables/useCustomerAccounts';
 import { apiErrorMessage } from 'src/services/api-envelope';
+import { listAllTransactions, type TransactionPage } from 'src/services/transactions.service';
+import type { TransactionSummary } from 'src/types/api';
 import { formatCurrencyIn } from 'src/utils/format';
+import { endpointLabel, transactionStatusMeta, transactionTypeMeta } from 'src/utils/transaction-labels';
 
 type Sel = string | number | boolean | null;
 type Txt = string | number | null;
@@ -623,7 +665,76 @@ function doBurn() {
 // Carteiras e contas do cliente carregam quando ele é escolhido em qualquer formulário.
 watch(() => [src.client, dst.client, mint.client, burn.client], (ids) => ids.forEach(ensureAccounts));
 
-// ---------- Histórico / aprovação ----------
+// ---------- Histórico de movimentações internas (API) ----------
+// O filtro `type` da API aceita um tipo por vez: uma chamada paginada para cada tipo, mescladas por data.
+const INTERNAL_TYPES = ['WalletTransfer', 'ContractOperation'] as const;
+const INTERNAL_PAGE_SIZE = 10;
+
+const internalPages = reactive<Record<string, { page: number; items: TransactionSummary[]; hasNextPage: boolean }>>({});
+const internalLoading = ref(false);
+const internalError = ref<string | null>(null);
+
+/**
+ * Só mostra o que é garantidamente mais recente que qualquer item ainda não carregado:
+ * para os tipos com mais páginas, a data do item mais antigo já carregado é o limite.
+ */
+const internalCutoff = computed(() =>
+  INTERNAL_TYPES.map((t) => internalPages[t])
+    .filter((p) => p?.hasNextPage && p.items.length)
+    .map((p) => p!.items[p!.items.length - 1]!.requestedAtUtc)
+    .reduce<string | null>((max, d) => (max === null || d > max ? d : max), null),
+);
+
+const internalRows = computed(() => {
+  const cutoff = internalCutoff.value;
+  return INTERNAL_TYPES.flatMap((t) => internalPages[t]?.items ?? [])
+    .filter((i) => cutoff === null || i.requestedAtUtc >= cutoff)
+    .sort((a, b) => b.requestedAtUtc.localeCompare(a.requestedAtUtc));
+});
+
+const internalHasMore = computed(() => INTERNAL_TYPES.some((t) => internalPages[t]?.hasNextPage));
+
+let internalSeq = 0;
+async function loadInternalHistory(more = false) {
+  const seq = ++internalSeq;
+  internalLoading.value = true;
+  internalError.value = null;
+  try {
+    // "Carregar mais" busca a próxima página só dos tipos cujo limite está segurando a lista.
+    const cutoff = internalCutoff.value;
+    const targets = more
+      ? INTERNAL_TYPES.filter((t) => {
+          const p = internalPages[t];
+          return p?.hasNextPage && p.items[p.items.length - 1]?.requestedAtUtc === cutoff;
+        })
+      : INTERNAL_TYPES;
+    const pages: TransactionPage[] = await Promise.all(
+      targets.map((type) =>
+        listAllTransactions({ page: more ? internalPages[type]!.page + 1 : 1, pageSize: INTERNAL_PAGE_SIZE, type }),
+      ),
+    );
+    if (seq !== internalSeq) return;
+    targets.forEach((type, i) => {
+      const prev = more ? internalPages[type] : undefined;
+      internalPages[type] = {
+        page: (prev?.page ?? 0) + 1,
+        items: [...(prev?.items ?? []), ...pages[i]!.items],
+        hasNextPage: pages[i]!.hasNextPage,
+      };
+    });
+  } catch (e) {
+    if (seq !== internalSeq) return;
+    internalError.value = apiErrorMessage(e, 'Não foi possível carregar as movimentações internas.');
+    $q.notify({ type: 'negative', message: internalError.value });
+  } finally {
+    if (seq === internalSeq) internalLoading.value = false;
+  }
+}
+
+void loadInternalHistory();
+defineExpose({ loadInternalHistory });
+
+// ---------- Histórico / aprovação (mock: liquidações e operações do sistema) ----------
 const filteredHistory = computed(() =>
   history.value.filter((i) =>
     tab.value === 'internal' ? i.type === 'Internal' : tab.value === 'contracts' ? i.type === 'Liquidation' : i.type === 'Mint' || i.type === 'Burn',
